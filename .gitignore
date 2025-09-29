@@ -1,0 +1,33 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+praw.ini
+/.env
+
+# Terraform State and Plan Files (May contain secrets)
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+
+# Local Terraform directories and logs
+.terraform/
+crash.log
+crash.*.log
+
+# Terraform variable override files (Often contain secrets)
+*.tfvars
+*.tfvars.json
+
+# Terraform Cloud/Enterprise credentials
+.terraformrc
+terraform.rc
+
+# Terraform provider lock file (See note below)
+.terraform.lock.hcl
