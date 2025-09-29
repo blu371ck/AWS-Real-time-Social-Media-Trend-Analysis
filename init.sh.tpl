@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo yum update -y
-sudo yum install git python3.9-pip python3.9-venv -y
+sudo yum install git python3.9-pip -y
 
 runuser -l ec2-user -c '
     cd /home/ec2-user
