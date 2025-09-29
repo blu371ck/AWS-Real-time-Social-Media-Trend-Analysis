@@ -9,3 +9,8 @@ variable "vpc_id" {
 variable "private_subnet_ids" { # Renamed to plural
   type = list(string)
 }
+
+variable "producer_security_group_id" {
+  description = "The security group ID of the EC2 producer instance."
+  type        = string
+}

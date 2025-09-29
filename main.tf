@@ -16,7 +16,9 @@ module "msk_cluster" {
 
   cluster_name       = var.project_name
   vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnet_ids # <-- Pass the list
+  private_subnet_ids = module.networking.private_subnet_ids
+  producer_security_group_id  = aws_security_group.producer_sg.id
+
 }
 
 module "redshift_cluster" {

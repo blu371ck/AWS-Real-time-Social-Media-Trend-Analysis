@@ -1,6 +1,21 @@
 resource "aws_security_group" "msk_sg" {
   name   = "${var.cluster_name}-msk-sg"
   vpc_id = var.vpc_id
+
+  ingress {
+    from_port         = 9094
+    to_port           = 9094
+    protocol          = "tcp"
+    security_groups  = [var.producer_security_group_id] 
+  }
+
+  ingress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    self              = true
+  }
+
   tags = {
     Name = "${var.cluster_name}-msk-sg"
   }
