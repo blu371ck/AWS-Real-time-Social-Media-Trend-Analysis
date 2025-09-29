@@ -39,3 +39,34 @@ resource "aws_security_group" "default" {
     Name = "default-sg"
   }
 }
+
+# Add to the bottom of modules/networking/main.tf
+
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ssm"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private_a.id]
+  security_group_ids  = [aws_security_group.default.id]
+}
+
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ssmmessages"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private_a.id]
+  security_group_ids  = [aws_security_group.default.id]
+}
+
+resource "aws_vpc_endpoint" "ec2messages" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ec2messages"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private_a.id]
+  security_group_ids  = [aws_security_group.default.id]
+}
+
+data "aws_region" "current" {}

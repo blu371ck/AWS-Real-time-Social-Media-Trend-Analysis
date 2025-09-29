@@ -25,7 +25,7 @@ module "redshift_cluster" {
   cluster_identifier = var.project_name
   master_password    = var.redshift_master_password
   vpc_id             = module.networking.vpc_id
-  private_subnet_ids  = module.networking.private_subnet_ids
+  private_subnet_ids = module.networking.private_subnet_ids
 }
 
 # --- Define Application Layer Resources ---
@@ -50,20 +50,26 @@ resource "aws_security_group" "producer_sg" {
 }
 
 data "aws_ami" "amazon_linux_2023" {
-    most_recent = true
-    owners      = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
-    filter {
-        name    = "name"
-        values  = ["al2023-ami-2023.8.20250915.0-kernel-6.12-x86_64"]
-    }
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.8.20250915.0-kernel-6.12-x86_64"]
+  }
+}
+
+resource "aws_iam_instance_profile" "producer_profile" {
+  name = "${var.project_name}-producer-profile"
+  role = module.iam_roles.ec2_ssm_role_name
 }
 
 resource "aws_instance" "producer_instance" {
-  ami           = data.aws_ami.amazon_linux_2023.id
-  instance_type = "t3.micro"
-  subnet_id     = module.networking.private_subnet_ids[0] # Place in a private subnet
+  ami                    = data.aws_ami.amazon_linux_2023.id
+  instance_type          = "t3.micro"
+  subnet_id              = module.networking.private_subnet_ids[0] # Place in a private subnet
   vpc_security_group_ids = [module.networking.default_security_group_id, aws_security_group.producer_sg.id]
+  iam_instance_profile   = aws_iam_instance_profile.producer_profile.name 
 
   user_data = templatefile("${path.module}/init.sh.tpl", {
     reddit_client_id      = var.reddit_client_id
@@ -73,7 +79,7 @@ resource "aws_instance" "producer_instance" {
     reddit_user_agent     = var.reddit_user_agent
     msk_bootstrap_brokers = module.msk_cluster.bootstrap_brokers_tls
   })
-  
+
   tags = {
     Name = "${var.project_name}-producer"
   }
