@@ -1,9 +1,12 @@
-output "endpoint" {
-  description = "Redshift cluster endpoint (host:port)."
-  value       = aws_redshift_cluster.main.endpoint
-  sensitive   = true
+output "vpc_id" {
+  value = aws_vpc.main.id
 }
-output "database_name" {
-  description = "Redshift database name."
-  value       = aws_redshift_cluster.main.database_name
+
+output "private_subnet_ids" {
+  description = "A list of the private subnet IDs."
+  value       = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+}
+
+output "default_security_group_id" {
+  value = aws_security_group.default.id
 }
