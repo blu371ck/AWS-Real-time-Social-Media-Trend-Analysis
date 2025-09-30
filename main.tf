@@ -14,10 +14,10 @@ module "iam_roles" {
 module "msk_cluster" {
   source = "./modules/msk"
 
-  cluster_name       = var.project_name
-  vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnet_ids
-  producer_security_group_id  = aws_security_group.producer_sg.id
+  cluster_name               = var.project_name
+  vpc_id                     = module.networking.vpc_id
+  private_subnet_ids         = module.networking.private_subnet_ids
+  producer_security_group_id = aws_security_group.producer_sg.id
 
 }
 
@@ -71,7 +71,7 @@ resource "aws_instance" "producer_instance" {
   instance_type          = "t3.micro"
   subnet_id              = module.networking.private_subnet_ids[0] # Place in a private subnet
   vpc_security_group_ids = [module.networking.default_security_group_id, aws_security_group.producer_sg.id]
-  iam_instance_profile   = aws_iam_instance_profile.producer_profile.name 
+  iam_instance_profile   = aws_iam_instance_profile.producer_profile.name
 
   user_data = templatefile("${path.module}/init.sh.tpl", {
     reddit_client_id      = var.reddit_client_id
@@ -86,6 +86,7 @@ resource "aws_instance" "producer_instance" {
     Name = "${var.project_name}-producer"
   }
 }
+
 
 # resource "aws_kinesisanalyticsv2_application" "flink_app" {
 #   name                   = "${var.project_name}-flink-app"

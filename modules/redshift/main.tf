@@ -11,7 +11,7 @@ resource "aws_security_group" "redshift_sg" {
 
 resource "aws_redshift_cluster" "main" {
   cluster_identifier = var.cluster_identifier
-  node_type          = "ra3.xlplus"
+  node_type          = "ra3.large"
   cluster_type       = "multi-node"
   number_of_nodes    = 2
   database_name      = "dev"
