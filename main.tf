@@ -73,6 +73,8 @@ resource "aws_instance" "producer_instance" {
   vpc_security_group_ids = [module.networking.default_security_group_id, aws_security_group.producer_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.producer_profile.name
 
+  user_data_replace_on_change = true
+
   user_data = templatefile("${path.module}/init.sh.tpl", {
     reddit_client_id      = var.reddit_client_id
     reddit_client_secret  = var.reddit_client_secret
