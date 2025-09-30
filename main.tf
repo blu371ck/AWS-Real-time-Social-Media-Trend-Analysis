@@ -89,21 +89,48 @@ resource "aws_instance" "producer_instance" {
   }
 }
 
+resource "aws_s3_object" "flink_jar" {
+  bucket = module.s3_data_lake.bucket_name
+  key    = "flink-app/flink-stream-processor-1.0.jar"
+  source = "../flink-stream-processor/target/flink-stream-processor-1.0.jar"
+  etag   = filemd5("../flink-stream-processor/target/flink-stream-processor-1.0.jar")
+}
 
-# resource "aws_kinesisanalyticsv2_application" "flink_app" {
-#   name                   = "${var.project_name}-flink-app"
-#   runtime_environment    = "FLINK-1_15"
-#   service_execution_role = module.iam_roles.flink_role_arn
+resource "aws_kinesisanalyticsv2_application" "flink_app" {
+  name                   = "${var.project_name}-flink-app"
+  runtime_environment    = "FLINK-1_15"
+  service_execution_role = module.iam_roles.flink_role_arn
 
-#   application_configuration {
-#     application_code_configuration {
-#       code_content_type = "ZIPFILE"
-#       code_content {
-#         s3_content_location {
-#           bucket_arn = module.s3_data_lake.bucket_arn
-#           file_key   = "flink-app/app.zip" # Placeholder path
-#         }
-#       }
-#     }
-#   }
-# }
+  application_configuration {
+    application_code_configuration {
+      code_content_type = "ZIPFILE"
+      code_content {
+        s3_content_location {
+          bucket_arn = module.s3_data_lake.bucket_arn
+          file_key   = "flink-app/flink-stream-porcessor-1.0.jar" # Placeholder path
+        }
+      }
+    }
+    flink_application_configuration {
+      parallelism_configuration {
+        configuration_type = "DEFAULT"
+      }
+    }
+    application_snapshot_configuration {
+      snapshots_enabled = false
+    }
+    environment_properties {
+      property_group {
+        property_group_id = "ProducerConfigProperties"
+        property_map = {
+          "bootstrap.servers" = module.msk_cluster.bootstrap_brokers_tls
+          "s3.sink.path"      = "s3a://${module.s3_data_lake.bucket_name}/raw/"
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    aws_s3_object.flink_jar
+  ]
+}

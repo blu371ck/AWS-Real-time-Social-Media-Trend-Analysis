@@ -47,4 +47,6 @@ REDDIT_USER_AGENT=${reddit_user_agent}
 MSK_BOOTSTRAP_BROKERS=${msk_bootstrap_brokers}
 EOT
 
+nohup python3 main.py > /dev/null 2>&1 &
+
 EOF
